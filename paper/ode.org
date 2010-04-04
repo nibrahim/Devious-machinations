@@ -1,0 +1,124 @@
+Creating physics aware games using ODE
+
+| *Noufal Ibrahim*                |
+| /Consulting software developer/ |
+| noufal@nibrahim.net.in          |
+
+* Abstract
+This is a brief tutorial on creating physics aware games using purely
+open source components and the Python programming language. The paper
+describes the use of the Open Dynamics Engine (ODE) which is a popular
+physics middleware used in many commerical games like BloodRayne 2[fn:1] and
+World of Goo[fn:2] and more [fn:3]
+
+The presentation will first provide an introduction to the ODE engine
+emphasising on it's use via its Python bindings and then a brief
+overwiew of the graphics toolkit which we will be using.
+
+The bulk of the presentation will focus on creating a simple game
+mimicking the classic "The Incredible Machine". It will guide the user
+through the development process and then finally end with a simplified
+but complete working version of the game in question.
+
+The presentation targets a intermediate to advanced level audience and
+expects a strong grasp of the Python language itself. Knowledge of
+Physics middleware would be useful but is not a must. 
+
+/It is not decided which graphics engine the presentation will use. It
+will either be pyglet or PyGame/.
+
+* Introduction
+** ODE and Python
+   The Open Dynamics Engine is a popular physics engine which provides
+   rigid body simulation and collision detection capabilities. It has a
+   nice set of Python bindings which makes it possible to create
+   realistic physics simulations using the language. Coupled with one of
+   the many high performance graphics libraries in the Python language
+   like (pyglet or PyGame), it's possible and easy to make a full fledged
+   game which is physics aware. 
+** The Incredible Machine. 
+   The Incredible Machine was a popular game designed by Jeff Tunnel
+   in the early 1990s. It was a strategy game built around creating
+   nonsensical Heath Robinson machines using a limited number of
+   'tools' to perform tasks like getting a bird out of a cage etc.
+
+* Graphics Library (/PyGame or Pyglet undecided/)
+  A quick tutorial on how to initialise the graphics engine, create a
+  few moving objects, manipulate them and check various parameters. 
+** Introduction
+   Introduction to architecture of the graphics library.
+** Initialisation
+   How to create a window and shut it down.
+** Creating graphics
+   How to create a graphical object in the window.
+** Animation
+   How to animate the object.
+** User controls
+   How to tie in the keyboard and the mouse to manipulate the objects
+   on the screen.
+** Collision detection
+   How to detect whether two objects are in contact.
+
+* ODE
+  A walkthrough of the ODE system
+** Introduction
+   The architecture of the ODE system and some details on it's
+   history. 
+** Using ODE
+   A simple text based simulation to show off the complexity that ODE
+   handles for us.
+   - Worlds
+   - World parameters
+   - Bodies
+   - Masses
+   - Positioning
+   - Forces
+   - Collisions/force interactions
+   - Timings
+
+* Tying up the graphics
+  Connecting the graphics library and ODE to perform a simple
+  simulation. /Not totally decided what but probably a bouncing ball/.
+  - Will include code and a quick walkthrough
+
+* Nonsensical machinations
+  The Incredible Machine is a simple but addictive game that requires
+  users to construct Heath Robinson machines to perform simple tasks
+  using the tools that are provided. A rudimentary physics system is
+  necessary to make the game realistic. 
+
+  We will in this presentation try to create a subset of the original
+  game. Our version is called "Nonsensical Machinations". It's not
+  meant to be complete but is meant to show the audience how to create
+  a full fledged game using physics middleware and Python.
+** Deciding the world of play
+   - Gravity and other constraints
+** Description of the level
+   - The task and the tools available to solve the problem.
+** Graphics
+   - We use stock sprites for graphical elements
+** GUI
+   - We use a rudimentary GUI to create the interface
+** Creating the objects in the /world/.
+   - The various objects which pre exist in the world are defined,
+     their physical properties are fixed and they are put in place. 
+** Posiitoning items in the /world/.
+   - The various /tools/ are positioned in the world.
+** Go!
+   - The world is kickstarted and we can see what happens.
+
+* Resources and further reading
+  - The Offical ODE site - http://ode.org
+  - The Python bindings for the library - http://pyode.sf.net
+  - The SDL wrappers for Python - http://pygame.org
+  - The Pyglet multimedia library for Python - http://pyglet.org
+  - Resources for free game graphics - http://molotov.nu/?page=graphics
+
+    
+
+
+[fn:1] http://en.wikipedia.org/wiki/BloodRayne2
+[fn:2] http://en.wikipedia.org/wiki/World_of_Goo
+[fn:3] http://ode.org/users.html
+
+ 
