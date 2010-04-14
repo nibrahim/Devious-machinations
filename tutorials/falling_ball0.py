@@ -3,12 +3,13 @@
 import ode
 import time
 import pygame
+import random
 from pygame.locals import DOUBLEBUF, KEYDOWN, QUIT, K_ESCAPE, K_LCTRL, KEYUP
 
 # The world is 512x512 pixels wide.
 # Each pixel is approximately 0.25m
 
-SCALE = 20.0
+SCALE = 4.0
 
 def g_to_w(x, y, z):
     "Converts the x,y and z coordinates from graphics to world (pygame to ODE)"
@@ -27,29 +28,29 @@ def w_to_g(x, y, z):
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, world, space):
+    def __init__(self, world, space, x, y):
         super(Ball,self).__init__()
         self.image = pygame.Surface((40, 40)).convert()
-        pygame.draw.circle(self.image, (200, 0, 200), (20, 20), 15, 0)
+        pygame.draw.circle(self.image, (200, 0, 200), (20, 20), 20, 0)
         self.rect = self.image.get_rect()
-        self.rect.center = 10, 10
+        self.rect.center = x, y
 
         # Body parameters for dynamics
         self.body = ode.Body(world)
         m = ode.Mass()
-        m.setSphere(20, 5)
+        m.setSphere(20, 20/SCALE) 
         self.body.setMass(m)
-        self.body.setPosition(g_to_w(10, 10 ,0))
+        self.body.setPosition(g_to_w(x, y ,0))
 
         # Geom parameters for collision detection.
         self.geom = ode.GeomSphere(space, 5)
         self.geom.setBody(self.body)
-        self.body.setLinearVel((5,0,0))
+        self.body.setLinearVel((15,0,0))
         
-    # def throw(self):
-    #     print "Adding force"
-    #     self.body.addForce((0,500000000,0))
-
+    def throw(self):
+        print "Adding force"
+        self.body.addForce((0,5000000,0))
+        self.body.addForce((5000000,0,0))
 
     def update(self):
         x, y, z = w_to_g(*self.body.getPosition())
@@ -71,12 +72,16 @@ def create_world():
 def create_space():
     "Creates the space for collision detection"
     space = ode.Space()
-    floor = ode.GeomPlane(space, (0, 1, 0), -5)
+    floor = ode.GeomPlane(space, (0, 1, 0), -25)
+    right_wall = ode.GeomPlane(space, (-1, 0, 0), -25)
+    left_wall = ode.GeomPlane(space, (1, 0, 0), -25)
     return space
 
 def create_sphere(world, space):
-    b = Ball(world, space)
-    return b
+    retval = []
+    for i in range(15):
+        retval.append(Ball(world, space, random.randint(200,300), random.randint(0,50)))
+    return retval
 
 def create_window():
     screen = pygame.display.set_mode((512, 512), DOUBLEBUF)#)|FULLSCREEN)
@@ -89,17 +94,18 @@ def near_callback(args, g0, g1):
     contacts = ode.collide(g0, g1)
     world, contactgroup = args
     for c in contacts:
-        c.setBounce(0.1)
+        c.setBounce(1)
         c.setMu(0)
+        c.setMu2(0)
         j = ode.ContactJoint(world, contactgroup, c)
         j.attach(g0.getBody(), g1.getBody())
 
     
-def main_loop(screen, empty, world, space, sphere):
-    group = pygame.sprite.GroupSingle(sphere)
+def main_loop(screen, empty, world, space, spheres):
+    group = pygame.sprite.Group(*spheres)
     lasttime = time.time()
     fps = 40
-    iters_per_frame = 3
+    iters_per_frame = 5
     dt = 1.0/fps
     clock = pygame.time.Clock()
     contactgroup = ode.JointGroup()
@@ -115,7 +121,8 @@ def main_loop(screen, empty, world, space, sphere):
                 return
             if event.type == KEYUP:
                 if event.key == K_LCTRL:
-                    sphere.throw()
+                    for i in spheres:
+                        i.throw()
         group.clear(screen, empty)
         group.update()
         group.draw(screen)
@@ -127,8 +134,8 @@ def main():
     world = create_world()
     space = create_space()
     screen, empty = create_window()
-    sphere = create_sphere(world, space)
-    main_loop(screen, empty, world, space, sphere)
+    spheres = create_sphere(world, space)
+    main_loop(screen, empty, world, space, spheres)
     
     
 
