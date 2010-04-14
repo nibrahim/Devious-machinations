@@ -44,7 +44,7 @@ class Ball(pygame.sprite.Sprite):
         # Geom parameters for collision detection.
         self.geom = ode.GeomSphere(space, 5)
         self.geom.setBody(self.body)
-        self.body.setLinearVel((1,0,0))
+        self.body.setLinearVel((5,0,0))
         
     # def throw(self):
     #     print "Adding force"
@@ -89,8 +89,8 @@ def near_callback(args, g0, g1):
     contacts = ode.collide(g0, g1)
     world, contactgroup = args
     for c in contacts:
-        c.setBounce(1)
-        c.setMu(50000000)
+        c.setBounce(0.1)
+        c.setMu(0)
         j = ode.ContactJoint(world, contactgroup, c)
         j.attach(g0.getBody(), g1.getBody())
 
@@ -98,15 +98,17 @@ def near_callback(args, g0, g1):
 def main_loop(screen, empty, world, space, sphere):
     group = pygame.sprite.GroupSingle(sphere)
     lasttime = time.time()
-    fps = 80
+    fps = 40
+    iters_per_frame = 3
     dt = 1.0/fps
     clock = pygame.time.Clock()
     contactgroup = ode.JointGroup()
     while True:
         clock.tick(fps)
-        space.collide((world, contactgroup), near_callback)
-        world.step(dt)
-        contactgroup.empty()
+        for i in range(iters_per_frame):
+            space.collide((world, contactgroup), near_callback)
+            world.step(dt)
+            contactgroup.empty()
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and
                                       event.key == K_ESCAPE):
