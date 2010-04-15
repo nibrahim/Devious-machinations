@@ -6,31 +6,18 @@ import pygame
 import random
 from pygame.locals import DOUBLEBUF, KEYDOWN, QUIT, K_ESCAPE, K_LCTRL, KEYUP
 
+from common import *
+
 # The world is 512x512 pixels wide.
 # Each pixel is approximately 0.25m
 
-SCALE = 4.0
-
-def g_to_w(x, y, z):
-    "Converts the x,y and z coordinates from graphics to world (pygame to ODE)"
-    rx = (x - 256)/SCALE
-    ry = (256 - y)/SCALE
-    rz = 0
-    return (rx, ry, rz)
-
-    
-def w_to_g(x, y, z):
-    "Converts the x,y and z coordinates from world to graphics (ODE to pygame)"
-    rx = SCALE*x + 256
-    ry = 256 - SCALE*y
-    rz = 0
-    return (rx, ry, rz)
 
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self, world, space, x, y):
         super(Ball,self).__init__()
         self.image = pygame.Surface((40, 40)).convert()
+        self.image.set_colorkey((0,0,0))
         pygame.draw.circle(self.image, (200, 0, 200), (20, 20), 20, 0)
         self.rect = self.image.get_rect()
         self.rect.center = x, y
@@ -60,34 +47,12 @@ class Ball(pygame.sprite.Sprite):
         self.rect.center = x, y
 
 
-
-def create_world():
-    "Creates the world and related components"
-    world = ode.World()
-    world.setGravity( (0, -9.81, 0) )
-    world.setERP(0.8)
-    world.setCFM(1E-5)
-    return world
-
-def create_space():
-    "Creates the space for collision detection"
-    space = ode.Space()
-    floor = ode.GeomPlane(space, (0, 1, 0), -25)
-    right_wall = ode.GeomPlane(space, (-1, 0, 0), -25)
-    left_wall = ode.GeomPlane(space, (1, 0, 0), -25)
-    return space
-
 def create_sphere(world, space):
     retval = []
     for i in range(15):
         retval.append(Ball(world, space, random.randint(200,300), random.randint(0,50)))
     return retval
 
-def create_window():
-    screen = pygame.display.set_mode((512, 512), DOUBLEBUF)#)|FULLSCREEN)
-    empty = pygame.Surface((512, 512)).convert()
-    pygame.mouse.set_visible(False)
-    return screen, empty
 
 def near_callback(args, g0, g1):
     # print "We're getting called ", g0, g1
@@ -127,7 +92,6 @@ def main_loop(screen, empty, world, space, spheres):
         group.update()
         group.draw(screen)
         pygame.display.flip()
-    
 
 
 def main():
