@@ -11,7 +11,7 @@ from common import *
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, world, space, x, y):
+    def __init__(self, world, space, x, y, density = 50):
         super(Ball,self).__init__()
         self.image = pygame.Surface((40, 40)).convert()
         self.image.set_colorkey((0,0,0))
@@ -22,7 +22,7 @@ class Ball(pygame.sprite.Sprite):
         # Body parameters for dynamics
         self.body = ode.Body(world)
         m = ode.Mass()
-        m.setSphere(50, 20/SCALE) 
+        m.setSphere(density, 20/SCALE) 
         self.body.setMass(m)
         self.body.setPosition(g_to_w(x, y ,0))
 
@@ -30,6 +30,14 @@ class Ball(pygame.sprite.Sprite):
         self.geom = ode.GeomSphere(space, 5)
         self.geom.setBody(self.body)
 
+    def disable(self):
+        self.geom.disable()
+        self.body.disable()
+
+    def enable(self):
+        self.geom.enable()
+        self.body.enable()
+        
     def throw(self):
         print "Adding force"
         self.body.addForce((0,5000000,0))
@@ -61,7 +69,7 @@ class Lever(pygame.sprite.Sprite):
         # Geom parameters for collision detection.
         self.geom = ode.GeomBox(space, (200/SCALE, 20/SCALE, 40/SCALE))
         self.geom.setBody(self.body)
-
+        
 
     def update(self):
         x, y, z = w_to_g(*self.body.getPosition())
@@ -79,7 +87,7 @@ def create_world():
     "Creates the world and related components"
     world = ode.World()
     world.setGravity( (0, -9.81, 0) )
-    world.setERP(0.8)
+    world.setERP(1)
     world.setCFM(1E-5)
     return world
 
@@ -90,17 +98,20 @@ def create_space():
     return space
 
 
-def create_sprites(world, space, jgroup):
-    b = Ball(world, space, 175, 10)
+def create_sprites(world, space, jgroup0, jgroup1):
+    top_ball = Ball(world, space, 175, 10, 350)
     l = Lever(world, space, 256, 366)
-    jgroup.attach(l.body, ode.environment)
-    t = l.body.getPosition()
-    jgroup.setAnchor(t)
-    return [b, l]
+    jgroup0.attach(l.body, ode.environment)
+    jgroup0.setAnchor(l.body.getPosition())
+    barrier = Ball(world, space, 360, 425)
+    jgroup1.attach(barrier.body, ode.environment)
+    jgroup1.setAnchor(barrier.body.getPosition())
+    right_ball = Ball(world, space, 348, 320, 1)
+    return [top_ball, l, right_ball, barrier]
 
 def create_window():
-    screen = pygame.display.set_mode((512, 512), DOUBLEBUF)#)|FULLSCREEN)
-    empty = pygame.Surface((512, 512)).convert()
+    screen = pygame.display.set_mode((1024, 1024), DOUBLEBUF)#)|FULLSCREEN)
+    empty = pygame.Surface((1024, 1024)).convert()
     pygame.mouse.set_visible(False)
     return screen, empty
 
@@ -116,13 +127,15 @@ def near_callback(args, g0, g1):
 
     
 def main_loop(screen, empty, world, space, spheres):
-    group = pygame.sprite.Group(*spheres)
-    lasttime = time.time()
+    ball = spheres[0]
+    ball.disable()
+    group = pygame.sprite.Group(*spheres[1:])
     fps = 40
     iters_per_frame = 5
     dt = 1.0/fps
     clock = pygame.time.Clock()
     contactgroup = ode.JointGroup()
+    count = 0
     while True:
         clock.tick(fps)
         for i in range(iters_per_frame):
@@ -137,9 +150,16 @@ def main_loop(screen, empty, world, space, spheres):
                 if event.key == K_LCTRL:
                     for i in spheres:
                         i.throw()
+        count += 1
+        if count == 15:
+            ball.enable()
+            group.add(ball)
         group.clear(screen, empty)
         group.update()
         group.draw(screen)
+        x,y,z = w_to_g(-200, -60,0)
+        pygame.draw.lines(screen,(250,250,250),False,[(x,y),(1024,y)])
+        pygame.draw.lines(screen,(250,0,0),False,[(400,y-50),(450,y),(550,y),(600,y-50)])
         pygame.display.flip()
     
 
@@ -149,7 +169,8 @@ def main():
     space = create_space()
     screen, empty = create_window()
     j1 = ode.BallJoint(world)
-    spheres = create_sprites(world, space, j1)
+    j2 = ode.BallJoint(world)
+    spheres = create_sprites(world, space, j1, j2)
     main_loop(screen, empty, world, space, spheres)
     
 if __name__ == "__main__":
