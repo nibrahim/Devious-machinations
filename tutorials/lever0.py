@@ -2,29 +2,12 @@
 
 import ode
 import time
+import math
 import pygame
 import random
 from pygame.locals import DOUBLEBUF, KEYDOWN, QUIT, K_ESCAPE, K_LCTRL, KEYUP
 
-# The world is 512x512 pixels wide.
-# Each pixel is approximately 0.25m
-
-SCALE = 4.0
-
-def g_to_w(x, y, z):
-    "Converts the x,y and z coordinates from graphics to world (pygame to ODE)"
-    rx = (x - 256)/SCALE
-    ry = (256 - y)/SCALE
-    rz = 0
-    return (rx, ry, rz)
-
-    
-def w_to_g(x, y, z):
-    "Converts the x,y and z coordinates from world to graphics (ODE to pygame)"
-    rx = SCALE*x + 256
-    ry = 256 - SCALE*y
-    rz = 0
-    return (rx, ry, rz)
+from common import *
 
 
 class Ball(pygame.sprite.Sprite):
@@ -39,7 +22,7 @@ class Ball(pygame.sprite.Sprite):
         # Body parameters for dynamics
         self.body = ode.Body(world)
         m = ode.Mass()
-        m.setSphere(20, 20/SCALE) 
+        m.setSphere(50, 20/SCALE) 
         self.body.setMass(m)
         self.body.setPosition(g_to_w(x, y ,0))
 
@@ -61,33 +44,36 @@ class Ball(pygame.sprite.Sprite):
 class Lever(pygame.sprite.Sprite):
     def __init__(self, world, space, x, y):
         super(Lever, self).__init__()
-        self.image = pygame.Surface((100, 20)).convert_alpha()
+        self.image = pygame.Surface((200, 20)).convert_alpha()
         self.image.fill((0, 200, 200))
+        self.original = self.image
         self.rect = self.image.get_rect()
         self.rect.center = x, y
+        self.rotation = 0
 
         # Body parameters for dynamics
         self.body = ode.Body(world)
         m = ode.Mass()
-        m.setBox(50, 100/SCALE, 20/SCALE, 40/SCALE) 
+        m.setBox(50, 200/SCALE, 20/SCALE, 40/SCALE) 
         self.body.setMass(m)
         self.body.setPosition(g_to_w(x, y ,0))
         
         # Geom parameters for collision detection.
-        self.geom = ode.GeomBox(space, (100/SCALE, 20/SCALE, 40/SCALE))
+        self.geom = ode.GeomBox(space, (200/SCALE, 20/SCALE, 40/SCALE))
         self.geom.setBody(self.body)
 
 
-        
-
     def update(self):
         x, y, z = w_to_g(*self.body.getPosition())
+        qw, qx, qy, qz = self.body.getQuaternion()
+        rotation = ((math.asin(2*qx*qy + 2*qz*qw) * 180)/math.pi)
+        self.image = pygame.transform.rotate(self.original, rotation)
+        self.rect = self.image.get_rect()
         # print self.body.getLinearVel()
         # print self.body.getPosition(),
         # print x,y
         self.rect.center = x, y
 
-        
 
 def create_world():
     "Creates the world and related components"
@@ -105,13 +91,11 @@ def create_space():
 
 
 def create_sprites(world, space, jgroup):
-    b = Ball(world, space, 250, 10)
+    b = Ball(world, space, 175, 10)
     l = Lever(world, space, 256, 366)
     jgroup.attach(l.body, ode.environment)
     t = l.body.getPosition()
-    print t
-    print g_to_w(256+50, 366, 0)
-    jgroup.setAnchor(g_to_w(256+10, 366, 0))
+    jgroup.setAnchor(t)
     return [b, l]
 
 def create_window():
