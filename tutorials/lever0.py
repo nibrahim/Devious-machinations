@@ -48,6 +48,9 @@ class Ball(pygame.sprite.Sprite):
         # print self.body.getPosition(),
         # print x,y
         self.rect.center = x, y
+        if 450<x<550 and 450 < y < 550:
+            print "We're done!"
+            raise SystemExit
 
 class Lever(pygame.sprite.Sprite):
     def __init__(self, world, space, x, y):
@@ -103,7 +106,7 @@ def create_sprites(world, space, jgroup0, jgroup1):
     l = Lever(world, space, 256, 366)
     jgroup0.attach(l.body, ode.environment)
     jgroup0.setAnchor(l.body.getPosition())
-    barrier = Ball(world, space, 360, 425)
+    barrier = Ball(world, space, 360, 400)
     jgroup1.attach(barrier.body, ode.environment)
     jgroup1.setAnchor(barrier.body.getPosition())
     right_ball = Ball(world, space, 348, 320, 1)
@@ -136,6 +139,13 @@ def main_loop(screen, empty, world, space, spheres):
     clock = pygame.time.Clock()
     contactgroup = ode.JointGroup()
     count = 0
+    # wall_b = ode.Body(world)
+    # wall_m = ode.Mass()
+    # wall_m.setBox(50, 70/SCALE, 10/SCALE, 10/SCALE) 
+    # wall_b.setMass(wall_m)
+    # wall_b.setPosition(g_to_w(512, 600 ,0))
+    # wall = ode.GeomBox(space, (70.0/SCALE, 10.0/SCALE, 10/SCALE))
+    # wall.setBody(wall_b)
     while True:
         clock.tick(fps)
         for i in range(iters_per_frame):
