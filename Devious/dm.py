@@ -7,7 +7,7 @@ from dm import utils
 
 
 logging.basicConfig(level = logging.INFO,
-                    format = "%(levelname)-8s|%(module)-12s:%(lineno)d - %(message)s")
+                    format = "%(levelname)-8s|%(module)12s:%(lineno)d - %(message)s")
 
 FPS = 30
 
@@ -20,9 +20,9 @@ def anim_loop(game_window):
         game_window.update()
 
                     
-def main(fullscreen):
+def main():
     logging.debug("Creating Window")
-    game_window = graphics.GameWindow(FPS, fullscreen)
+    game_window = graphics.GameWindow(FPS)
     level = utils.load_level("0")
     try:
         game_window.level_setup(level)
@@ -32,7 +32,5 @@ def main(fullscreen):
 
 if __name__ == "__main__":
     import sys
-    full = False
-    if "-f" in sys.argv: full = True
     if "-v" in sys.argv: logging.root.setLevel(logging.DEBUG)
-    main(full)
+    main()
