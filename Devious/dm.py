@@ -1,13 +1,21 @@
 #!/usr/bin/env python
 
-from dm import utils
+from dm import graphics
 import logging
 logging.basicConfig(level = logging.INFO,
                     format = "%(levelname)-8s|%(module)-12s:%(lineno)d - %(message)s")
+
+def anim_loop(screen, empty):
+    logging.debug("Starting animation loop")
+    
                     
 def main(fullscreen):
     logging.debug("Creating Window")
-    utils.create_window(fullscreen)
+    screen, empty = graphics.create_window(fullscreen)
+    
+    anim_loop(screen, empty)
+
+    
 
 if __name__ == "__main__":
     import sys
