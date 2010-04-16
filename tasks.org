@@ -1,0 +1,6 @@
+* Devious machinations
+** Side panel with stuff you can pick up and position 
+** Start button to get enable the physics in the whole thing.
+** Detect end of level.
+
+* Limitations
