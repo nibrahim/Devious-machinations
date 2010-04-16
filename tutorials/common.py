@@ -32,8 +32,8 @@ def create_space():
     "Creates the space for collision detection"
     space = ode.Space()
     floor = ode.GeomPlane(space, (0, 1, 0), -25)
-    right_wall = ode.GeomPlane(space, (-1, 0, 0), -25)
-    left_wall = ode.GeomPlane(space, (1, 0, 0), -25)
+    right_wall = ode.GeomPlane(space, (-1, 0, 0), -45)
+    left_wall = ode.GeomPlane(space, (1, 0, 0), -45)
     return space
 
 def create_window():

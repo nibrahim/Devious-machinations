@@ -66,7 +66,7 @@ class Ball(pygame.sprite.Sprite):
 
 def create_sphere(world, space):
     retval = []
-    for i in range(15):
+    for i in range(50):
         retval.append(Ball(world, space, random.randint(200, 300), random.randint(0,50)))
     return retval
 
