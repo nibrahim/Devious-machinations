@@ -21,6 +21,7 @@ class Ball(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, (200, 0, 200), (20, 20), 20, 0)
         self.rect = self.image.get_rect()
         self.rect.center = x, y
+        self.picked_up = False
 
         # Body parameters for dynamics
         self.body = ode.Body(world)
@@ -33,6 +34,20 @@ class Ball(pygame.sprite.Sprite):
         self.geom = ode.GeomSphere(space, 5)
         self.geom.setBody(self.body)
         self.body.setLinearVel((15,0,0))
+
+    def pick_up(self):
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            self.body.disable()
+            self.geom.disable()
+            self.picked_up = True
+
+    def drop(self):
+        if self.picked_up:
+            self.picked_up = False
+            self.body.enable()
+            self.geom.enable()
+            x, y = self.rect.center
+            self.body.setPosition(g_to_w(x, y, 0))
         
     def throw(self):
         print "Adding force"
@@ -40,17 +55,19 @@ class Ball(pygame.sprite.Sprite):
         self.body.addForce((5000000,0,0))
 
     def update(self):
-        x, y, z = w_to_g(*self.body.getPosition())
-        # print self.body.getLinearVel()
-        # print self.body.getPosition(),
-        # print x,y
-        self.rect.center = x, y
-
+        if self.picked_up:
+            self.rect.center = pygame.mouse.get_pos()
+        else:
+            x, y, z = w_to_g(*self.body.getPosition())
+            # print self.body.getLinearVel()
+            # print self.body.getPosition(),
+            # print x,y
+            self.rect.center = x, y
 
 def create_sphere(world, space):
     retval = []
     for i in range(15):
-        retval.append(Ball(world, space, random.randint(200,300), random.randint(0,50)))
+        retval.append(Ball(world, space, random.randint(200, 300), random.randint(0,50)))
     return retval
 
 
@@ -68,7 +85,6 @@ def near_callback(args, g0, g1):
     
 def main_loop(screen, empty, world, space, spheres):
     group = pygame.sprite.Group(*spheres)
-    lasttime = time.time()
     fps = 40
     iters_per_frame = 5
     dt = 1.0/fps
@@ -88,6 +104,14 @@ def main_loop(screen, empty, world, space, spheres):
                 if event.key == K_LCTRL:
                     for i in spheres:
                         i.throw()
+
+            if event.type == MOUSEBUTTONDOWN:
+                for i in spheres:
+                    i.pick_up()
+            if event.type == MOUSEBUTTONUP:
+                for i in spheres:
+                    i.drop()
+                        
         group.clear(screen, empty)
         group.update()
         group.draw(screen)

@@ -1,7 +1,7 @@
 SCALE = 4.0
 
 import ode, pygame
-from pygame.locals import DOUBLEBUF, KEYDOWN, QUIT, K_ESCAPE, K_LCTRL, KEYUP
+from pygame.locals import *
 
 
 def g_to_w(x, y, z):
@@ -39,5 +39,5 @@ def create_space():
 def create_window():
     screen = pygame.display.set_mode((512, 512), DOUBLEBUF)#)|FULLSCREEN)
     empty = pygame.Surface((512, 512)).convert()
-    pygame.mouse.set_visible(False)
+    pygame.mouse.set_visible(True)
     return screen, empty
