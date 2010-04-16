@@ -2,36 +2,33 @@
 
 import logging
 
-
 from dm import graphics
 from dm import utils
+
 
 logging.basicConfig(level = logging.INFO,
                     format = "%(levelname)-8s|%(module)-12s:%(lineno)d - %(message)s")
 
-def anim_loop(screen, empty):
+FPS = 30
+
+def anim_loop(game_window):
     "The main animation loop which plays the game"
     logging.debug("Starting animation loop")
-    fps = 30
     while True:
-        graphics.handle_events()
-        graphics.sync_frames(fps)
-        
+        game_window.handle_events()
+        game_window.sync_frames()
+        game_window.update()
 
-def level_setup(level, screen):
-    "The function that sets up the tools in the level and places the intial objects"
-    pass
-    
                     
 def main(fullscreen):
     logging.debug("Creating Window")
-    screen, empty = graphics.create_window(fullscreen)
+    game_window = graphics.GameWindow(FPS, fullscreen)
     level = utils.load_level("0")
     try:
-        level_setup(level, screen)
+        game_window.level_setup(level)
     except Exception,m:
         logging.critical("Error during setting up level - '%s'"%m)
-    anim_loop(screen, empty)
+    anim_loop(game_window)
 
 if __name__ == "__main__":
     import sys
