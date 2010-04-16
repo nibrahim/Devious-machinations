@@ -35,6 +35,8 @@ class Ball(pygame.sprite.Sprite):
         self.body.disable()
 
     def enable(self):
+        x, y = self.rect.center
+        self.body.setPosition(g_to_w(x, y, 0))
         self.geom.enable()
         self.body.enable()
         
@@ -44,9 +46,7 @@ class Ball(pygame.sprite.Sprite):
 
     def update(self):
         x, y, z = w_to_g(*self.body.getPosition())
-        # print self.body.getLinearVel()
-        # print self.body.getPosition(),
-        # print x,y
+
         self.rect.center = x, y
         if 450<x<550 and 450 < y < 550:
             print "We're done!"
@@ -139,13 +139,6 @@ def main_loop(screen, empty, world, space, spheres):
     clock = pygame.time.Clock()
     contactgroup = ode.JointGroup()
     count = 0
-    # wall_b = ode.Body(world)
-    # wall_m = ode.Mass()
-    # wall_m.setBox(50, 70/SCALE, 10/SCALE, 10/SCALE) 
-    # wall_b.setMass(wall_m)
-    # wall_b.setPosition(g_to_w(512, 600 ,0))
-    # wall = ode.GeomBox(space, (70.0/SCALE, 10.0/SCALE, 10/SCALE))
-    # wall.setBody(wall_b)
     while True:
         clock.tick(fps)
         for i in range(iters_per_frame):
