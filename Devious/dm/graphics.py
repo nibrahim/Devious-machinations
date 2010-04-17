@@ -72,6 +72,17 @@ class GameWindow(object):
         left_wall = ode.GeomPlane(self.space, (1, 0, 0), tx)
         self.contactgroup = ode.JointGroup()
 
+    def _draw_grid(self):
+        "To draw a grid useful for visual feedback"
+        # Verticals
+        for i in range(0, WINSIZE[0] - 250, 50):
+            pygame.draw.line(self.screen, (50, 150, 0), (i,0), (i,WINSIZE[1] - 50))
+            pygame.draw.line(self.empty, (50, 150, 0), (i,0), (i,WINSIZE[1] - 50))
+        # Horizontals
+        for i in range(0, WINSIZE[1] - 50, 50):
+            pygame.draw.line(self.screen, (50, 150, 0), (0,i), (WINSIZE[0] - 250, i))
+            pygame.draw.line(self.empty, (50, 150, 0), (0,i), (WINSIZE[0] - 250, i))
+
     def __init__(self, frame_rate):
         "Create the window at the start"
         flags = DOUBLEBUF
@@ -140,13 +151,14 @@ class GameWindow(object):
             self.object_group.add(i)
             self.all_group.add(i)
         
-
+            
     def update(self):
         "Updates the screen in the animation loop and advances the physics world"
         pygame.draw.lines(self.screen, (0,250,0), False, [(0,WINSIZE[1] - 50),
                                                           (WINSIZE[0] - 250, WINSIZE[1] - 50),
                                                           (WINSIZE[0] - 250, 0)],
-                          2)
+                          5)
+        self._draw_grid()
         for i in range(0,self.iters_per_frame):
             self.space.collide((self.world, self.contactgroup), near_callback)
             self.world.step(1.0/self.frame_rate)

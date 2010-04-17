@@ -13,11 +13,11 @@ IN_SIMULATION  = "IN_SIMULATION"  # Participating in simulation
 
 class DeviousSprites(pygame.sprite.Sprite):
     "Base class for all sprites in the game. The pickup/drop etc. logic is common to all objects"
-    def __init__(self):
-        print "We're running here!"
+    def __init__(self, movable = False):
         # Disable the bodies
         self.state = RESERVE
         self._physics_enable(False)
+        self.movable = movable
         super(DeviousSprites,self).__init__()
 
     def enable(self):
@@ -35,28 +35,29 @@ class DeviousSprites(pygame.sprite.Sprite):
                 i.disable()
 
     def pick_up(self):
-        if self.state != IN_SIMULATION:
-            logging.debug("  We're inside with %s"%self.state)
-            if self.rect.collidepoint(pygame.mouse.get_pos()):
-                self._physics_enable(False)
-                self.state = PICKED_UP
+        if self.movable:
+            if self.state != IN_SIMULATION:
+                logging.debug("  We're inside with %s"%self.state)
+                if self.rect.collidepoint(pygame.mouse.get_pos()):
+                    self._physics_enable(False)
+                    self.state = PICKED_UP
 
     def drop(self):
-        if self.state == PICKED_UP:
-            if self.main_window.collidepoint(pygame.mouse.get_pos()): #Dropping inside main window
-                self.state = IN_MAIN_SCREEN
-                self.place(*pygame.mouse.get_pos())
-            else:
-                self.state = RESERVE
+        if self.movable:
+            if self.state == PICKED_UP:
+                if self.main_window.collidepoint(pygame.mouse.get_pos()): #Dropping inside main window
+                    self.state = IN_MAIN_SCREEN
+                    self.place(*pygame.mouse.get_pos())
+                else:
+                    self.state = RESERVE
 
     def place(x,y):
         raise NotImplementedError()
 
 class Ball(DeviousSprites):
-    def __init__(self, world, space, main_window, x, y, density, colour, g_to_w, w_to_g, scale ):
-        self.image = pygame.Surface((40, 40)).convert()
+    def __init__(self, world, space, main_window, image, x, y, density, colour, g_to_w, w_to_g, scale, movable = True):
+        self.image = pygame.image.load(image)
         self.image.set_colorkey((0, 0, 0))
-        pygame.draw.circle(self.image, colour, (20, 20), 20, 0)
         self.rect = self.image.get_rect()
         self.rect.center = x, y
         self.g2w = g_to_w
@@ -79,7 +80,7 @@ class Ball(DeviousSprites):
         # Keep lists of physical objects to enable/disable
         self.entities = [self.body, self.geom]
 
-        super(Ball,self).__init__()
+        super(Ball,self).__init__(movable)
 
 
     def update(self):
@@ -96,9 +97,8 @@ class Ball(DeviousSprites):
         self.body.setPosition(self.g2w(x, y, 0))
 
 class Lever(DeviousSprites):
-    def __init__(self, world, space, main_window, x, y, g_to_w, w_to_g, scale):
-        self.image = pygame.Surface((200, 20)).convert_alpha()
-        self.image.fill((0, 200, 200))
+    def __init__(self, world, space, main_window, image, x, y, g_to_w, w_to_g, scale, movable = True):
+        self.image = pygame.image.load(image)
         self.original = self.image
         self.rect = self.image.get_rect()
         self.rect.center = x, y
@@ -110,10 +110,14 @@ class Lever(DeviousSprites):
         # Body parameters for dynamics
         self.body = ode.Body(world)
         m = ode.Mass()
-        m.setBox(50, 200/self.scale, 20/self.scale, 40/self.scale) 
+        m.setBox(50, 200/self.scale, 10/self.scale, 40/self.scale) 
         self.body.setMass(m)
         self.body.setPosition(self.g2w(x, y ,0))
-        
+
+        self.restraint = ode.GeomBox(space, (0.5, 0.5, 0.5))
+        x, y, z = self.body.getPosition()
+        self.restraint.setPosition(
+
         # Geom parameters for collision detection.
         self.geom = ode.GeomBox(space, (200/self.scale, 20/self.scale, 40/self.scale))
         self.geom.setBody(self.body)
@@ -125,7 +129,7 @@ class Lever(DeviousSprites):
 
         # Keep lists of physical objects to enable/disable
         self.entities = [self.body, self.geom]
-        super(Lever, self).__init__()
+        super(Lever, self).__init__(movable)
         
 
     def update(self):
