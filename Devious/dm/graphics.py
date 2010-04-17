@@ -57,7 +57,7 @@ class GameWindow(object):
         self.world.setGravity( (0, -9.81, 0) )
         self.world.setERP(0.8)
         self.world.setCFM(1E-5)
-        self.iters_per_frame = 5
+        self.iters_per_frame = 8
 
         self.space = ode.Space()
         # These conversions are done just to convert coordinates to
@@ -179,9 +179,9 @@ class GameWindow(object):
                                                           (WINSIZE[0] - 250, 0)],
                           5)
         self._draw_grid()
-        for i in range(0,self.iters_per_frame):
+        for i in range(1,self.iters_per_frame):
             self.space.collide((self.world, self.contactgroup), near_callback)
-            self.world.step(1.0/self.frame_rate)
+            self.world.step(3.5/(self.frame_rate*i))
             self.contactgroup.empty()
         self.all_group.clear(self.screen, self.empty)
         self.all_group.update()
