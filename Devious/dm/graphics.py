@@ -97,7 +97,7 @@ class GameWindow(object):
         
     def __init__(self, frame_rate):
         "Create the window at the start"
-        flags = DOUBLEBUF
+        flags = DOUBLEBUF|FULLSCREEN
         logging.info("Resolution specified at %dx%d"%WINSIZE)
         screen = pygame.display.set_mode(WINSIZE, flags)
         screen.fill((0,25,0))
