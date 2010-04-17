@@ -12,7 +12,6 @@ from common import *
 # Each pixel is approximately 0.25m
 
 
-
 class Ball(pygame.sprite.Sprite):
     def __init__(self, world, space, x, y):
         super(Ball,self).__init__()
@@ -37,15 +36,15 @@ class Ball(pygame.sprite.Sprite):
 
     def pick_up(self):
         if self.rect.collidepoint(pygame.mouse.get_pos()):
-            self.body.disable()
-            self.geom.disable()
+            # self.body.disable()
+            # self.geom.disable()
             self.picked_up = True
 
     def drop(self):
         if self.picked_up:
             self.picked_up = False
-            self.body.enable()
-            self.geom.enable()
+            # self.body.enable()
+            # self.geom.enable()
             x, y = self.rect.center
             self.body.setPosition(g_to_w(x, y, 0))
         
@@ -56,7 +55,9 @@ class Ball(pygame.sprite.Sprite):
 
     def update(self):
         if self.picked_up:
-            self.rect.center = pygame.mouse.get_pos()
+            x, y = pygame.mouse.get_pos()
+            self.rect.center = x,y
+            self.body.setPosition(g_to_w(x, y, 0))
         else:
             x, y, z = w_to_g(*self.body.getPosition())
             # print self.body.getLinearVel()
