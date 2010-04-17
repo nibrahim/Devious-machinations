@@ -38,15 +38,17 @@ class Ball(pygame.sprite.Sprite):
         self.geom.setBody(self.body)
         self._physics_enable(False)
 
+    def enable(self):
+        if self.state == IN_MAIN_SCREEN:
+            self._physics_enable(True)
+            self.state = IN_SIMULATION
 
     def _physics_enable(self, status):
         "Used to turn the physics simulation for this object on or off"
         if status:
-            logging.debug("Enabling physics simulation - %s"%self.state)
             self.body.enable()
             self.geom.enable()
         else:
-            logging.debug("Disabling physics simulation - %s"%self.state)
             self.body.disable()
             self.geom.disable()
 
@@ -63,17 +65,14 @@ class Ball(pygame.sprite.Sprite):
                 self.state = IN_MAIN_SCREEN
                 x, y = self.rect.center
                 self.body.setPosition(self.g2w(x, y, 0))
-                self._physics_enable(True)
             else:
                 self.state = RESERVE
-                self._physics_enable(False)
 
     def update(self):
         if self.state == PICKED_UP:
             self.rect.center = pygame.mouse.get_pos()
         else:
-            if self.state == IN_SIMULATION or self.state == IN_MAIN_SCREEN:
-                self.state = IN_SIMULATION
+            if self.state == IN_SIMULATION:
                 x, y, z = self.w2g(*self.body.getPosition())
                 self.rect.center = x, y
             

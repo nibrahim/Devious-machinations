@@ -42,8 +42,15 @@ class GameWindow(object):
         self.g2w = g_to_w
         self.w2g = w_to_g
         self.scale = SCALE
-        self.group = pygame.sprite.Group()
+        self.object_group = pygame.sprite.Group()
+        self.all_group = pygame.sprite.Group()
         self.main_window = pygame.Rect(0, 0, WINSIZE[0] - 250, WINSIZE[1] - 50)
+        self.play_button = pygame.image.load("data/play.png")
+        self.play_button.set_colorkey((0, 0, 0))
+        a,b,c,d = self.play_button.get_rect()
+        self.play_button_rect = pygame.Rect(0.8 * WINSIZE[0], WINSIZE[1] - 150, c, d)
+        self.screen.blit(self.play_button, (0.8 * WINSIZE[0], WINSIZE[1] - 150))
+
         
     def _set_physics_attrs(self):
         self.world = ode.World()
@@ -64,7 +71,7 @@ class GameWindow(object):
         tx, dummy, dummy = self.g2w(tx, 0, 0)
         left_wall = ode.GeomPlane(self.space, (1, 0, 0), tx)
         self.contactgroup = ode.JointGroup()
-    
+
     def __init__(self, frame_rate):
         "Create the window at the start"
         flags = DOUBLEBUF
@@ -81,7 +88,6 @@ class GameWindow(object):
         self._set_graphics_attrs(frame_rate)
         self._set_physics_attrs()
 
-
     def handle_events(self):
         "Handle all events during a frame of animation"
         for event in pygame.event.get():
@@ -91,10 +97,14 @@ class GameWindow(object):
                 raise SystemExit
 
             if event.type == MOUSEBUTTONDOWN:
-                for i in self.group.sprites():
-                    i.pick_up()
+                if self.play_button_rect.collidepoint(pygame.mouse.get_pos()):
+                    for i in self.object_group.sprites():
+                        i.enable()
+                else:
+                    for i in self.object_group.sprites():
+                        i.pick_up()
             if event.type == MOUSEBUTTONUP:
-                for i in self.group.sprites():
+                for i in self.object_group.sprites():
                     i.drop()
 
 
@@ -127,7 +137,9 @@ class GameWindow(object):
             x,y = pos_x, pos_y
             pos_y += 50
             i.rect.center = x, y
-            self.group.add(i)
+            self.object_group.add(i)
+            self.all_group.add(i)
+        
 
     def update(self):
         "Updates the screen in the animation loop and advances the physics world"
@@ -139,7 +151,7 @@ class GameWindow(object):
             self.space.collide((self.world, self.contactgroup), near_callback)
             self.world.step(1.0/self.frame_rate)
             self.contactgroup.empty()
-        self.group.clear(self.screen, self.empty)
-        self.group.update()
-        self.group.draw(self.screen)
+        self.all_group.clear(self.screen, self.empty)
+        self.all_group.update()
+        self.all_group.draw(self.screen)
         pygame.display.flip()
