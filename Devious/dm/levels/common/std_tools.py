@@ -15,7 +15,7 @@ class Ball(pygame.sprite.Sprite):
         super(Ball,self).__init__()
         self.image = pygame.Surface((40, 40)).convert()
         self.image.set_colorkey((0,0,0))
-        pygame.draw.circle(self.image, (200, 0, 200), (20, 20), 20, 0)
+        pygame.draw.circle(self.image, (200, 255, 200), (20, 20), 20, 0)
         self.rect = self.image.get_rect()
         self.rect.center = x, y
         self.picked_up = False
@@ -52,7 +52,7 @@ class Ball(pygame.sprite.Sprite):
 
     def pick_up(self):
         if self.state != IN_SIMULATION:
-            logging.debug("  We're inside")
+            logging.debug("  We're inside with %s"%self.state)
             if self.rect.collidepoint(pygame.mouse.get_pos()):
                 self._physics_enable(False)
                 self.state = PICKED_UP

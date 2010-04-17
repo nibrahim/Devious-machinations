@@ -53,19 +53,16 @@ class GameWindow(object):
         self.iters_per_frame = 5
 
         self.space = ode.Space()
-        print (WINSIZE[1] - 40)/SCALE
         # These conversions are done just to convert coordinates to
         # get physical locations of the main window
         tx = WINSIZE[0] - 250
         ty = WINSIZE[1] - 50
         tx, ty, dummy = self.g2w(tx, ty, 0)
         floor = ode.GeomPlane(self.space, (0, 1, 0), ty)
-        print "1 ",tx
         right_wall = ode.GeomPlane(self.space, (-1, 0, 0), -tx)
         tx = 0
         tx, dummy, dummy = self.g2w(tx, 0, 0)
-        print "2 ",tx
-        left_wall = ode.GeomPlane(self.space, (-1, 0, 0), -60)
+        left_wall = ode.GeomPlane(self.space, (1, 0, 0), tx)
         self.contactgroup = ode.JointGroup()
     
     def __init__(self, frame_rate):
@@ -73,15 +70,16 @@ class GameWindow(object):
         flags = DOUBLEBUF
         logging.info("Resolution specified at %dx%d"%WINSIZE)
         screen = pygame.display.set_mode(WINSIZE, flags)
+        screen.fill((0,25,0))
         pygame.display.set_caption("Devious Machinations")
         empty = pygame.Surface(WINSIZE).convert()
+        empty.fill((0,25,0))
         pygame.mouse.set_visible(True)
         pygame.font.init()
         self.screen = screen
         self.empty = empty
         self._set_graphics_attrs(frame_rate)
         self._set_physics_attrs()
-
 
 
     def handle_events(self):
@@ -137,7 +135,7 @@ class GameWindow(object):
                                                           (WINSIZE[0] - 250, WINSIZE[1] - 50),
                                                           (WINSIZE[0] - 250, 0)],
                           2)
-        for i in range(self.iters_per_frame):
+        for i in range(0,self.iters_per_frame):
             self.space.collide((self.world, self.contactgroup), near_callback)
             self.world.step(1.0/self.frame_rate)
             self.contactgroup.empty()
