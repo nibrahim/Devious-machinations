@@ -83,6 +83,18 @@ class GameWindow(object):
             pygame.draw.line(self.screen, (50, 150, 0), (0,i), (WINSIZE[0] - 250, i))
             pygame.draw.line(self.empty, (50, 150, 0), (0,i), (WINSIZE[0] - 250, i))
 
+    def _level_complete(self):
+        logging.info("Completed level")
+        sound = pygame.mixer.Sound("data/tada.wav")
+        sound.play()
+        f = pygame.font.Font("data/Dalila.ttf", 50)
+        text0 = f.render("Level completed", True, (250, 250, 250))
+        self.screen.blit(text0, (100, 50))
+        for i in range(100): # Display hundred frames of animation more before stopping
+            self.update(False)
+        self.all_group.empty()
+        
+        
     def __init__(self, frame_rate):
         "Create the window at the start"
         flags = DOUBLEBUF
@@ -94,6 +106,7 @@ class GameWindow(object):
         empty.fill((0,25,0))
         pygame.mouse.set_visible(True)
         pygame.font.init()
+        pygame.mixer.init()
         self.screen = screen
         self.empty = empty
         self._set_graphics_attrs(frame_rate)
@@ -132,27 +145,34 @@ class GameWindow(object):
         # Print level name
         logging.debug("Displaying level name")
         f = pygame.font.Font("data/Dalila.ttf", 20)
-        text = f.render(level.NAME, True, (250, 250, 250))
+        text0 = f.render(level.NAME, True, (250, 250, 250))
+        f = pygame.font.Font("data/Dalila.ttf", 15)
+        text1 = f.render('Instructions : %s'%level.INSTRUCTIONS, True, (200, 200, 200))
+        
         pos_x, pos_y = WINSIZE
         pos_x *= 0.77
-        pos_y -= (text.get_height() + 15)
-        self.screen.blit(text, (pos_x, pos_y))
-        self.empty.blit(text, (pos_x, pos_y))
+        pos_y -= (text0.get_height() + 15)
+        self.screen.blit(text0, (pos_x, pos_y))
+        self.empty.blit(text0, (pos_x, pos_y))
+        self.screen.blit(text1, (5, WINSIZE[1]-20))
+        self.empty.blit(text0, (5, WINSIZE[1]-20))
 
         # Get list of sprites and put them on the sidebar
         logging.debug("Obtaining list of tools provided by level")
         pos_x = WINSIZE[0] - 120
         pos_y = 50
         for i in level.tools:
-            x,y = pos_x, pos_y
-            pos_y += 50
-            i.place(x, y)
-            logging.debug("Positioning '%s' at (%s,%s)"%(i.name, x, y))
+            if i.movable:
+                x,y = pos_x, pos_y
+                pos_y += 50
+                i.place(x, y)
+                logging.debug("Positioning '%s' at (%s,%s)"%(i.name, x, y))
             self.object_group.add(i)
             self.all_group.add(i)
-        
-            
-    def update(self):
+
+        self.level = level
+
+    def update(self, check = True):
         "Updates the screen in the animation loop and advances the physics world"
         pygame.draw.lines(self.screen, (0,250,0), False, [(0,WINSIZE[1] - 50),
                                                           (WINSIZE[0] - 250, WINSIZE[1] - 50),
@@ -167,3 +187,6 @@ class GameWindow(object):
         self.all_group.update()
         self.all_group.draw(self.screen)
         pygame.display.flip()
+        if check and self.level.success():
+            self._level_complete()
+            return True

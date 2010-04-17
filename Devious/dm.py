@@ -14,10 +14,12 @@ FPS = 30
 def anim_loop(game_window):
     "The main animation loop which plays the game"
     logging.debug("Starting animation loop")
+    finished = False
     while True:
         game_window.handle_events()
         game_window.sync_frames()
-        game_window.update()
+        if not finished:
+            finished = game_window.update()
 
                     
 def main():
@@ -26,7 +28,7 @@ def main():
     level = utils.load_level("0")
     try:
         game_window.level_setup(level)
-    except Exception,m:
+    except KeyboardInterrupt,m:
         logging.critical("Error during setting up level - '%s'"%m)
     anim_loop(game_window)
 
