@@ -70,7 +70,6 @@ def _create_tools(game_window):
 def init(game_window):
     b0, b1, l0, e = _create_tools(game_window)
     _inital_positions(game_window, b0, e)
-    
     tools.extend([b0, b1, l0, e])
 
 def success():

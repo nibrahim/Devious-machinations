@@ -10,7 +10,6 @@ PICKED_UP      = "PICKED_UP"      # Being moved around
 IN_MAIN_SCREEN = "IN_MAIN_SCREEN" # Placed on the screen
 IN_SIMULATION  = "IN_SIMULATION"  # Participating in simulation
 
-
 class DeviousSprites(pygame.sprite.Sprite):
     "Base class for all sprites in the game. The pickup/drop etc. logic is common to all objects"
     def __init__(self, movable = False):
