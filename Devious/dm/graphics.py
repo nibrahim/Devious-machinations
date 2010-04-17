@@ -130,13 +130,13 @@ class GameWindow(object):
 
         # Get list of sprites and put them on the sidebar
         logging.debug("Obtaining list of tools provided by level")
-        pos_x = WINSIZE[0] - 200
+        pos_x = WINSIZE[0] - 120
         pos_y = 50
         for i in level.tools:
-            logging.debug("Positioning '%s'"%i.name)
             x,y = pos_x, pos_y
             pos_y += 50
-            i.rect.center = x, y
+            i.place(x, y)
+            logging.debug("Positioning '%s' at (%s,%s)"%(i.name, x, y))
             self.object_group.add(i)
             self.all_group.add(i)
         
