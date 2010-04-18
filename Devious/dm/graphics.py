@@ -90,8 +90,7 @@ class GameWindow(object):
         f = pygame.font.Font("data/Dalila.ttf", 50)
         text0 = f.render("Level completed", True, (250, 250, 250))
         self.screen.blit(text0, (100, 50))
-        for i in range(100): # Display hundred frames of animation more before stopping
-            self.update(False)
+        self.update(False)
         self.all_group.empty()
         
         

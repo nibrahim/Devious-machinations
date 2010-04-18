@@ -5,7 +5,7 @@ import pygame
 from common import std_tools
 
 NAME = "Tutorial level : Leverage"
-INSTRUCTIONS = "Get the yellow tennis ball into the stone container"
+INSTRUCTIONS = "Get the yellow tennis ball into the basket"
 
 tools = []
 
