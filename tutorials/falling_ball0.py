@@ -36,15 +36,15 @@ class Ball(pygame.sprite.Sprite):
 
     def pick_up(self):
         if self.rect.collidepoint(pygame.mouse.get_pos()):
-            # self.body.disable()
-            # self.geom.disable()
+            self.body.disable()
+            self.geom.disable()
             self.picked_up = True
 
     def drop(self):
         if self.picked_up:
             self.picked_up = False
-            # self.body.enable()
-            # self.geom.enable()
+            self.body.enable()
+            self.geom.enable()
             x, y = self.rect.center
             self.body.setPosition(g_to_w(x, y, 0))
         
@@ -67,7 +67,7 @@ class Ball(pygame.sprite.Sprite):
 
 def create_sphere(world, space):
     retval = []
-    for i in range(50):
+    for i in range(20):
         retval.append(Ball(world, space, random.randint(200, 300), random.randint(0,50)))
     return retval
 
