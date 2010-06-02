@@ -1,0 +1,49 @@
+#+LaTeX_CLASS: beamer
+#+TITLE: Creating Physics aware games using Open Dynamics Engine
+#+AUTHOR: Noufal Ibrahim
+#+LaTeX_CLASS_OPTIONS: [presentation]
+#+BEAMER_FRAME_LEVEL: 2
+#+BEAMER_HEADER_EXTRA: \usetheme{Dresden}\usecolortheme{default}
+#+COLUMNS: %35ITEM %10BEAMER_env(Env) %10BEAMER_envargs(Env Args) %4BEAMER_col(Col) %8BEAMER_extra(Extra)
+#+OPTIONS: tags:nil
+
+
+* Introduction
+** Overview
+   - First point
+   - Last point
+** PyGame
+   - SDL
+** PyODE
+   - ODE
+** TIM
+   - Sierra
+* Component intros
+** PyGame
+*** Code example						:B_quotation:
+    :PROPERTIES:
+    :BEAMER_env: quotation
+    :END:
+#+BEGIN_SRC python
+
+  def foo():
+   print "Hello"
+#+END_SRC
+*** Descriptions
+    - Something else here
+** PyODE
+*** Code example						:B_quotation:
+    :PROPERTIES:
+    :BEAMER_env: quotation
+    :END:
+    def bar():
+      print "Hello"
+      print "Goodbye"
+*** Descriptions
+    - ODE descriptions here
+* Devious machinations
+** Simple game
+   - Here we go
+   - Here we are again
+   
+  
