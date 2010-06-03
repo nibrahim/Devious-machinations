@@ -1,12 +1,12 @@
 #+SETUPFILE: s5.org
-#+TITLE: Creating Physics aware games using Open Dynamics Engine
+#+TITLE: Creating physics aware games using Open Dynamics Engine
 #+AUTHOR: Noufal Ibrahim
-#+BIND: org-s5-html-preamble-footer "<h1>PyCon Apac 2010</h1><h2>Singapore, 11 June 2010</h2>"
-* Introduction 
+#+BIND: org-s5-html-preamble-footer "<h1>PyCon APAC 2010</h1><h2>Singapore, 11 June 2010</h2>"
+* Introduction
 ** Noufal Ibrahim
-** Freelance Python developer and trainer based in Bangalore
+** Freelance developer and trainer based in Bangalore
 ** Organiser of PyCon India 2009
-** [[mailto:noufal@nibrahim.net.in][noufal@gmail.com]]
+** [[mailto:noufal@nibrahim.net.in][noufal@nibrahim.net.in]]
 ** [[http://nibrahim.net.in]]
 * Introduction
 ** Game development is fun.
@@ -21,14 +21,28 @@
 ** Example : Animation and mouse event handling.
 * Components : PyODE						:Incremental:
 ** Wrapper around the [[http://www.ode.org/][ODE]] library.
-** Physics middleware used in commercial games (BloodRayne 2, World of Goo).
+** 3D Physics middleware used in commercial games (BloodRayne 2, World of Goo).
 ** Rigid body dynamics
 *** To handle effects of forces on bodies.
 *** /Bodies/ interacting in a /world/.
-*** Centres of gravity, point masses etc.
 ** Collision detection
 *** To handle objects touching each other.
 *** /Geometries/ interacting in a /space/.
-*** Collisions handles by creating and manipulating temporary /joint/s. 
 ** Example : Lots of balls falling into a pit.
-*  
+* The Incredible Machine 
+** Strategy game by Jeff Tunnell (1993) published by Dynamix.
+** Construct Heath Robinson machines for nonsensical tasks.
+** Simple deterministic 2D physics simulation.
+** Gameplay.
+* Devious machinations
+** Our clone of TIM
+** One level
+   [[./screenshot-small.png]]
+*** Drop the tennis ball into the wicker basket.
+*** You have a few levers and 2 extra balls.
+* Devious machinations : code
+** Let's look through some source code.
+* Thank you
+** Questions?
+** Contact me at [[mailto:noufal@nibrahim.net.in][noufal@nibrahim.net.in]]
+
